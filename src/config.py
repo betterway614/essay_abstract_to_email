@@ -99,7 +99,10 @@ class Config:
 
     @property
     def llm_base_url(self) -> Optional[str]:
-        return os.getenv("LLM_BASE_URL", "https://api.openai.com/v1").strip()
+        raw = os.getenv("LLM_BASE_URL")
+        if raw and raw.strip():
+            return raw.strip()
+        return "https://api.openai.com/v1"
 
 # Global config instance
 try:
