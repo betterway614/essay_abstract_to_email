@@ -72,6 +72,8 @@ Go to the **Actions** tab and enable the workflow. It will run automatically eve
    # Optional: dry run without calling LLM and sending email
    # DRY_RUN=1 python src/main.py
    python src/main.py
+   # Or
+   python main.py
    ```
 
 4. **Run Tests**:

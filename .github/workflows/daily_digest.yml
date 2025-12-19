@@ -41,4 +41,4 @@ jobs:
         SMTP_HOST: ${{ vars.SMTP_HOST }}
         SMTP_PORT: ${{ vars.SMTP_PORT }}
       run: |
-        python src/main.py
+        python main.py
