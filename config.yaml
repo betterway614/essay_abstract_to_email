@@ -1,0 +1,31 @@
+# 筛选规则
+criteria:
+  # 关注的学科 (如 cs.CV, cs.LG, cs.AI)
+  categories: 
+    - "cs.SE"
+    - "cs.LG"
+    - "cs.AI"
+  
+  # 过滤关键词 (支持大小写不敏感匹配)
+  keywords: 
+    - "Large Language Model"
+    - "LLM"
+    - "muti Agent"
+    - "Agent"
+    - "Software testing"
+    - "Quality Attributes"
+  # 关键词匹配模式: "OR" (命中任一) 或 "AND" (全部命中)
+  match_logic: "OR"
+
+# LLM 设置
+llm:
+  enable: true
+  provider: "openai" # 兼容 openai 格式
+  model: "deepseek-chat" # 或 deepseek-chat
+  language: "zh-CN"
+  
+# 邮件设置
+email:
+  recipient: "2214278197@qq.com" # 接收邮箱，也可以通过环境变量 MAIL_RECIPIENT 覆盖
+  subject_prefix: "[ArXiv Daily 🚀]"
+  send_empty: false # 若无符合条件的论文，是否发送通知
