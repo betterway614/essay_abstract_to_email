@@ -14,10 +14,19 @@ class ArxivClient:
             num_retries=3
         )
 
-    def fetch_papers(self) -> List[Dict[str, Any]]:
+    def fetch_papers(self, top_n: int = 10) -> List[Dict[str, Any]]:
         """
         Fetch papers from ArXiv based on configuration.
+
+        Notes:
+            - Applies a 24-hour time window filter on `published` (UTC).
+            - Performs keyword filtering on title + abstract.
+            - Ranks matched papers by a simple relevance score computed from keyword hits,
+              and returns only the top `top_n` papers (highest relevance first).
         """
+        if not isinstance(top_n, int) or top_n <= 0:
+            raise ValueError("top_n must be a positive integer")
+
         if not settings:
             logger.error("Configuration not initialized.")
             return []
@@ -71,6 +80,7 @@ class ArxivClient:
                 
                 # Keyword Filtering
                 if self._matches_keywords(result, keywords, match_logic):
+                    relevance_score = self._compute_relevance_score(result, keywords)
                     paper_data = {
                         "title": result.title,
                         "authors": [a.name for a in result.authors],
@@ -78,15 +88,21 @@ class ArxivClient:
                         "published": result.published,
                         "pdf_url": result.pdf_url,
                         "entry_id": result.entry_id,
-                        "categories": result.categories
+                        "categories": result.categories,
+                        "_relevance_score": relevance_score
                     }
                     results.append(paper_data)
                     
         except Exception as e:
             logger.error(f"Error fetching papers from ArXiv: {e}")
             
-        logger.info(f"Found {len(results)} papers matching criteria.")
-        return results
+        results.sort(key=lambda p: (p.get("_relevance_score", 0), p.get("published")), reverse=True)
+        limited = results[:top_n]
+        for p in limited:
+            p.pop("_relevance_score", None)
+
+        logger.info(f"Found {len(limited)} papers matching criteria.")
+        return limited
 
     def _matches_keywords(self, paper: arxiv.Result, keywords: List[str], logic: str) -> bool:
         """
@@ -104,6 +120,24 @@ class ArxivClient:
             return all(hits)
         else: # OR
             return any(hits)
+
+    def _compute_relevance_score(self, paper: arxiv.Result, keywords: List[str]) -> int:
+        if not keywords:
+            return 0
+
+        title = (paper.title or "").lower()
+        summary = (paper.summary or "").lower()
+        normalized_keywords = [k.lower() for k in keywords if k]
+
+        score = 0
+        for kw in normalized_keywords:
+            if not kw:
+                continue
+            if kw in title:
+                score += 3
+            if kw in summary:
+                score += 1
+        return score
 
 if __name__ == "__main__":
     # Simple test

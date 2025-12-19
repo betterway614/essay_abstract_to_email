@@ -68,3 +68,57 @@ def test_fetch_papers(mock_search, mock_client_cls, mock_settings):
     
     assert len(results) == 1
     assert results[0]['title'] == "Recent LLM Paper"
+
+
+@patch('arxiv_client.arxiv.Client')
+@patch('arxiv_client.arxiv.Search')
+def test_fetch_papers_top_n_and_relevance_sorting(mock_search, mock_client_cls, mock_settings):
+    mock_client_instance = mock_client_cls.return_value
+
+    now = datetime.now(timezone.utc)
+
+    p1 = MagicMock()
+    p1.title = "LLM Agent for Vision"
+    p1.summary = "This paper introduces an agent."
+    p1.published = now - timedelta(hours=2)
+    p1.authors = [MagicMock(name="Author A")]
+    p1.pdf_url = "http://pdf1"
+    p1.entry_id = "1"
+    p1.categories = ["cs.CV"]
+
+    p2 = MagicMock()
+    p2.title = "A New LLM"
+    p2.summary = "LLM LLM LLM. Agent."
+    p2.published = now - timedelta(hours=2)
+    p2.authors = [MagicMock(name="Author B")]
+    p2.pdf_url = "http://pdf2"
+    p2.entry_id = "2"
+    p2.categories = ["cs.CV"]
+
+    p3 = MagicMock()
+    p3.title = "Agent Systems"
+    p3.summary = "An agent for tasks."
+    p3.published = now - timedelta(hours=2)
+    p3.authors = [MagicMock(name="Author C")]
+    p3.pdf_url = "http://pdf3"
+    p3.entry_id = "3"
+    p3.categories = ["cs.CV"]
+
+    mock_client_instance.results.return_value = [p1, p2, p3]
+
+    client = ArxivClient()
+    results = client.fetch_papers(top_n=2)
+
+    assert len(results) == 2
+    assert results[0]["title"] == "LLM Agent for Vision"
+    assert results[1]["title"] == "A New LLM"
+
+
+def test_fetch_papers_top_n_validation(mock_settings):
+    client = ArxivClient()
+    with pytest.raises(ValueError):
+        client.fetch_papers(top_n=0)
+    with pytest.raises(ValueError):
+        client.fetch_papers(top_n=-1)
+    with pytest.raises(ValueError):
+        client.fetch_papers(top_n=1.5)  # type: ignore[arg-type]
