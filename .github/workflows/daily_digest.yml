@@ -34,8 +34,10 @@ jobs:
         MAIL_USER: ${{ secrets.MAIL_USER }}
         MAIL_PASS: ${{ secrets.MAIL_PASS }}
         MAIL_RECIPIENT: ${{ secrets.MAIL_RECIPIENT }}
+        MAIL_RECIPIENTS: ${{ secrets.MAIL_RECIPIENTS }}
         LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
         LLM_BASE_URL: ${{ secrets.LLM_BASE_URL }}
+        LLM_MODEL: ${{ secrets.LLM_MODEL }}
         SMTP_HOST: ${{ vars.SMTP_HOST }}
         SMTP_PORT: ${{ vars.SMTP_PORT }}
       run: |
