@@ -7,7 +7,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from config import settings
-from arxiv_client import ArxivClient
+from fetchers.manager import FetchManager
 from llm_processor import LLMProcessor
 from mailer import Mailer
 
@@ -31,8 +31,8 @@ async def main():
     dry_run = os.getenv("DRY_RUN", "").strip().lower() in {"1", "true", "yes", "y"}
 
     # 1. Fetch Papers
-    client = ArxivClient()
-    papers = client.fetch_papers()
+    manager = FetchManager()
+    papers = manager.fetch_all_papers()
 
     if not papers:
         logger.info("No papers found matching the criteria.")

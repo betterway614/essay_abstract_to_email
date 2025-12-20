@@ -36,3 +36,14 @@ def test_env_vars_precedence(tmp_path, monkeypatch):
     
     config = Config(str(config_file))
     assert config.mail_recipient == "env@example.com"
+
+def test_data_sources_default(tmp_path):
+    config_file = tmp_path / "config.yaml"
+    with open(config_file, 'w') as f:
+        yaml.dump({}, f)
+    
+    config = Config(str(config_file))
+    # Default behavior check
+    assert config.data_sources["arxiv"]["enable"] == True
+    assert config.data_sources["semantic_scholar"]["enable"] == False
+

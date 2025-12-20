@@ -31,7 +31,14 @@
 
         {% for paper in papers %}
         <div class="paper">
-            <h2><a href="{{ paper.pdf_url }}" target="_blank">{{ loop.index }}. {{ paper.title }}</a></h2>
+            <h2>
+                <a href="{{ paper.pdf_url }}" target="_blank">{{ loop.index }}. {{ paper.title }}</a>
+                {% if paper.source == 'ArXiv' %}
+                <span class="badge badge-arxiv">ArXiv</span>
+                {% elif paper.source == 'Semantic Scholar' %}
+                <span class="badge badge-s2">S2</span>
+                {% endif %}
+            </h2>
             <div class="authors">Authors: {{ paper.authors|join(', ') }}</div>
 
             {% if paper.ai_summary %}

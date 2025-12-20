@@ -36,6 +36,18 @@ class Config:
             logging.warning(f"Missing environment variables: {', '.join(missing)}. Some features may not work.")
 
     @property
+    def data_sources(self) -> Dict[str, Any]:
+        return self._config.get("data_sources", {
+            "arxiv": {"enable": True},
+            "semantic_scholar": {"enable": False}
+        })
+
+    @property
+    def semantic_scholar_api_key(self) -> Optional[str]:
+        """Get Semantic Scholar API Key from env."""
+        return os.getenv("SEMANTIC_SCHOLAR_API_KEY", "").strip() or None
+
+    @property
     def criteria(self) -> Dict[str, Any]:
         return self._config.get("criteria", {})
 
@@ -50,6 +62,15 @@ class Config:
     @property
     def match_logic(self) -> str:
         return self.criteria.get("match_logic", "OR").upper()
+
+    @property
+    def arxiv_lookback_hours(self) -> int:
+        raw = self.criteria.get("arxiv_lookback_hours", 24)
+        try:
+            value = int(raw)
+        except Exception:
+            return 24
+        return value if value > 0 else 24
 
     @property
     def llm_config(self) -> Dict[str, Any]:

@@ -1,3 +1,12 @@
+# 新增数据源配置
+data_sources:
+  arxiv:
+    enable: true
+  semantic_scholar:
+    enable: true
+    # S2 的搜索可能比 ArXiv 慢，建议关键词少而精
+    api_key_env: "SEMANTIC_SCHOLAR_API_KEY" # 对应 Secrets 里的 key
+
 # 筛选规则
 criteria:
   # 关注的学科 (如 cs.CV, cs.LG, cs.AI)
@@ -5,15 +14,17 @@ criteria:
     - "cs.SE"
     - "cs.LG"
     - "cs.AI"
+
+  arxiv_lookback_hours: 168
   
   # 过滤关键词 (支持大小写不敏感匹配)
   keywords: 
     - "Large Language Model"
-    - "LLM"
-    - "muti Agent"
-    - "Agent"
+    - "Intelligent Testing"
+    - "Multi-Agent System"
+    - "Automated Test Generation"
     - "Software testing"
-    - "Quality Attributes"
+    - "Software Quality Attributes"
   # 关键词匹配模式: "OR" (命中任一) 或 "AND" (全部命中)
   match_logic: "OR"
 
